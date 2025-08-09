@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { cleanupAuthState } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { Loader2, Mail, Lock, LogIn, UserPlus, Chrome, Square } from "lucide-react";
+import { Loader2, Mail, Lock, LogIn, UserPlus, Apple, Facebook, Chrome, KeyRound, ArrowRight } from "lucide-react";
 
 interface AuthGateProps {
   open: boolean;
@@ -19,21 +19,43 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const redirectTo = `${window.location.origin}/dashboard`;
 
-  const handleEmailAuth = async (e: React.FormEvent) => {
+  const handleEmailOnlySignIn = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+    try {
+      cleanupAuthState();
+      try { await supabase.auth.signOut({ scope: "global" }); } catch {}
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: redirectTo }
+      });
+      if (error) throw error;
+      setMessage("We hebben je een e-mail gestuurd met een login link.");
+    } catch (err: any) {
+      setError(err?.message ?? "Er ging iets mis. Probeer het opnieuw.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setMessage(null);
     try {
       cleanupAuthState();
       try { await supabase.auth.signOut({ scope: "global" }); } catch {}
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        console.info("auth_success");
         onSuccess();
       } else {
         const { error } = await supabase.auth.signUp({
@@ -42,7 +64,6 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
           options: { emailRedirectTo: redirectTo }
         });
         if (error) throw error;
-        console.info("auth_success");
         onSuccess();
       }
     } catch (err: any) {
@@ -52,7 +73,7 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
     }
   };
 
-  const oauth = async (provider: "google" | "azure") => {
+  const oauth = async (provider: "google" | "facebook" | "apple") => {
     setLoading(true);
     setError(null);
     try {
@@ -60,9 +81,26 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
       try { await supabase.auth.signOut({ scope: "global" }); } catch {}
       const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
       if (error) throw error;
-      // Redirect will occur; dashboard will log telemetry
+      // Redirect will occur
     } catch (err: any) {
       setError(err?.message ?? "OAuth fout. Probeer het opnieuw.");
+      setLoading(false);
+    }
+  };
+
+  const tryPasskey = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      if ((supabase.auth as any).signInWithPasskey) {
+        const { error } = await (supabase.auth as any).signInWithPasskey();
+        if (error) throw error;
+      } else {
+        console.info("passkey_click");
+      }
+    } catch (err: any) {
+      setError(err?.message ?? "Passkey inloggen is niet beschikbaar.");
+    } finally {
       setLoading(false);
     }
   };
@@ -74,91 +112,143 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onCancel(); }}>
-      <DialogContent aria-modal="true" role="dialog" className="max-w-md glass-panel">
-        <DialogHeader>
-          <DialogTitle>Log in of maak een account om door te gaan</DialogTitle>
-          <DialogDescription>
-            We bewaren je prompt veilig, je kunt hem zo verder gebruiken.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex items-center gap-2 rounded-lg border p-1 bg-background">
-          <button
-            type="button"
-            className={cn("flex-1 py-2 text-sm rounded-md", mode === "signin" ? "bg-secondary" : "")}
-            onClick={() => setMode("signin")}
-          >
-            Inloggen
-          </button>
-          <button
-            type="button"
-            className={cn("flex-1 py-2 text-sm rounded-md", mode === "signup" ? "bg-secondary" : "")}
-            onClick={() => setMode("signup")}
-          >
-            Account maken
-          </button>
+      <DialogContent aria-modal="true" role="dialog" className={cn(
+        "max-w-[420px] rounded-3xl border bg-white text-foreground",
+        "shadow-[0_10px_40px_rgba(0,0,0,0.12)] p-0 overflow-hidden"
+      )}>
+        {/* Header area to match screenshot */}
+        <div className="px-6 pt-6">
+          <h2 className="text-2xl font-semibold leading-tight">Inloggen</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Doorgaan naar Innosales</p>
         </div>
 
-        <form onSubmit={handleEmailAuth} className="space-y-3">
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        {/* Body */}
+        {mode === "signin" ? (
+          <form onSubmit={handleEmailOnlySignIn} className="px-6 mt-5">
+            <label htmlFor="email" className="block text-sm mb-2">E-mail</label>
             <Input
+              id="email"
               type="email"
-              placeholder="E-mailadres"
+              placeholder="naam@bedrijf.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="pl-9"
               aria-label="E-mailadres"
+              className="h-11"
             />
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="password"
-              placeholder="Wachtwoord"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="pl-9"
-              aria-label="Wachtwoord"
-            />
-          </div>
 
-          {error && (
-            <p className="text-sm text-destructive" role="alert" aria-live="assertive">{error}</p>
-          )}
+            <Button type="submit" className="mt-3 w-full rounded-md h-11 bg-foreground text-background shadow-[0_3px_0_rgba(0,0,0,0.35)] hover:opacity-95" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Doorgaan met e-mail
+                </>
+              ) : (
+                <>Doorgaan met e-mail</>
+              )}
+            </Button>
 
-          <Button type="submit" className="w-full bg-[hsl(var(--gold))] text-white" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {mode === "signin" ? "Bezig met inloggen…" : "Account aanmaken…"}
-              </>
-            ) : (
-              <>
-                {mode === "signin" ? <LogIn className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
-                {mode === "signin" ? "Inloggen" : "Account maken"}
-              </>
+            <button type="button" onClick={tryPasskey} className="mt-4 w-full inline-flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <KeyRound className="h-4 w-4" /> Inloggen met passkey
+            </button>
+
+            <div className="my-5 flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="h-px flex-1 bg-border" />
+              <span>of</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <Button type="button" variant="secondary" className="h-11 bg-muted text-foreground hover:bg-muted" onClick={() => oauth("apple")} disabled={loading} aria-label="Log in met Apple">
+                <Apple className="h-5 w-5" />
+              </Button>
+              <Button type="button" variant="secondary" className="h-11 bg-muted text-foreground hover:bg-muted" onClick={() => oauth("facebook")} disabled={loading} aria-label="Log in met Facebook">
+                <Facebook className="h-5 w-5" />
+              </Button>
+              <Button type="button" variant="secondary" className="h-11 bg-muted text-foreground hover:bg-muted" onClick={() => oauth("google")} disabled={loading} aria-label="Log in met Google">
+                <Chrome className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {message && (
+              <p className="mt-4 text-sm text-muted-foreground" role="status" aria-live="polite">{message}</p>
             )}
-          </Button>
-        </form>
+            {error && (
+              <p className="mt-2 text-sm text-destructive" role="alert" aria-live="assertive">{error}</p>
+            )}
 
-        <div className="my-1"><Separator /></div>
+            <div className="mt-8 mb-6 text-sm">
+              <span className="text-muted-foreground">Nieuw bij Innosales? </span>
+              <button type="button" onClick={() => setMode("signup")} className="inline-flex items-center gap-1 font-medium text-[hsl(var(--gold))] hover:opacity-90">
+                Aan de slag <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleEmailPassword} className="px-6 mt-5">
+            <h3 className="text-lg font-medium mb-4">Account maken</h3>
+            <div className="space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="E-mailadres"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="pl-9 h-11"
+                  aria-label="E-mailadres"
+                />
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="Wachtwoord"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="pl-9 h-11"
+                  aria-label="Wachtwoord"
+                />
+              </div>
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <Button variant="outline" onClick={() => oauth("google")} disabled={loading}>
-            <Chrome className="mr-2 h-4 w-4" /> Google
-          </Button>
-          <Button variant="outline" onClick={() => oauth("azure")} disabled={loading}>
-            <Square className="mr-2 h-4 w-4" /> Microsoft
-          </Button>
+            {error && (
+              <p className="mt-3 text-sm text-destructive" role="alert" aria-live="assertive">{error}</p>
+            )}
+
+            <Button type="submit" className="mt-4 w-full h-11 bg-[hsl(var(--gold))] text-white" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Account aanmaken
+                </>
+              ) : (
+                <>
+                  <UserPlus className="mr-2 h-4 w-4" /> Account aanmaken
+                </>
+              )}
+            </Button>
+
+            <div className="mt-6 mb-6 text-sm">
+              <span className="text-muted-foreground">Al een account? </span>
+              <button type="button" onClick={() => setMode("signin")} className="inline-flex items-center gap-1 font-medium text-foreground hover:opacity-80">
+                Inloggen <LogIn className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="px-6 pb-5">
+          <Separator />
+          <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+            <button className="hover:text-foreground" type="button">Help</button>
+            <button className="hover:text-foreground" type="button">Privacy</button>
+            <button className="hover:text-foreground" type="button">Voorwaarden</button>
+          </div>
         </div>
-
-        <DialogFooter className="mt-2">
-          <Button variant="ghost" onClick={onCancel} type="button">Annuleren</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
