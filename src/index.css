@@ -139,3 +139,23 @@ All colors MUST be HSL. */
     box-shadow: var(--shadow-soft);
   }
 }
+
+/* Ambient golden gradient overlay */
+@keyframes ambient-gold-pan {
+  0% { transform: translate3d(-8%, -6%, 0) scale(1); }
+  50% { transform: translate3d(8%, 4%, 0) scale(1.05); }
+  100% { transform: translate3d(-8%, -6%, 0) scale(1); }
+}
+
+@layer utilities {
+  .ambient-gold {
+    @apply pointer-events-none absolute inset-0;
+    background:
+      radial-gradient(40% 35% at 15% 20%, hsl(var(--gold) / 0.12), transparent 60%),
+      radial-gradient(35% 30% at 85% 70%, hsl(var(--gold) / 0.10), transparent 60%),
+      radial-gradient(25% 25% at 50% 50%, hsl(var(--gold) / 0.08), transparent 60%);
+    filter: blur(28px);
+    animation: ambient-gold-pan 22s ease-in-out infinite;
+  }
+}
+

@@ -15,6 +15,8 @@ const Index = () => {
             "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 100%)",
         }}
       />
+      {/* Subtle animated golden gradient overlay */}
+      <div aria-hidden="true" className="ambient-gold" />
       <Header />
       <div className="relative z-10">
         <HeroPrompt />

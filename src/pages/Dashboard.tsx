@@ -96,6 +96,8 @@ const Dashboard = () => {
           backgroundSize: "24px 24px",
         }}
       />
+      {/* Subtle animated golden gradient overlay */}
+      <div aria-hidden="true" className="ambient-gold" />
 
       <div ref={shellRef} className="relative z-10 min-h-screen">
         {/* Sidebar */}
