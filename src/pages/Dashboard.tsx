@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Home, Activity, Plus, RefreshCcw, Zap, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const navSegments = [
   "AI-curious Twente",
@@ -148,6 +149,8 @@ const currentSuggestion = useMemo(
   () => SUGGESTIONS_POOL[suggestionIndex % SUGGESTIONS_POOL.length],
   [suggestionIndex]
 );
+// DB prospects
+const [dbProspects, setDbProspects] = useState<Prospect[] | null>(null);
 
   // SEO
   useEffect(() => {
@@ -171,6 +174,36 @@ const currentSuggestion = useMemo(
 
   useEffect(() => {
     console.info("dashboard_loaded");
+  }, []);
+
+  // Haal demo-bedrijven uit de database (read-only)
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase
+        .from("companies")
+        .select(
+          "kvk_nummer,name,place,province,vestigingen_count,total_emp,reg_date,rechtsvorm,websites,non_mailing"
+        )
+        .limit(9);
+      if (error) {
+        console.error("fetch_companies_error", error);
+        return;
+      }
+      const mapped: Prospect[] = (data as any[]).map((d) => ({
+        kvk_nummer: d.kvk_nummer,
+        naam: d.name ?? "Onbekende naam",
+        plaats: d.place ?? "—",
+        provincie: d.province ?? "—",
+        vestigingen_count: d.vestigingen_count ?? 0,
+        total_emp: d.total_emp ?? null,
+        reg_date: d.reg_date ?? null,
+        rechtsvorm: d.rechtsvorm ?? null,
+        websites: d.websites ?? [],
+        non_mailing: d.non_mailing ?? false,
+        score: 75,
+      }));
+      setDbProspects(mapped);
+    })();
   }, []);
 
   const handleLogoClick = () => {
@@ -441,11 +474,11 @@ const currentSuggestion = useMemo(
 
 <section className="mt-8">
   <header className="mb-3">
-    <h2 className="text-lg font-semibold">Prospects (voorbeelddata)</h2>
-    <p className="text-sm text-muted-foreground">Dit is een voorbeeldlijst met velden die we uit de KVK-API zullen vullen.</p>
+    <h2 className="text-lg font-semibold">Prospects</h2>
+    <p className="text-sm text-muted-foreground">Deze lijst komt uit de database (demo-data) en is klaar voor KVK-verrijking.</p>
   </header>
   <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-    {placeholderProspects.map((p) => (
+    {(dbProspects?.length ? dbProspects : placeholderProspects).map((p) => (
       <button
         key={p.kvk_nummer}
         onClick={() => console.info("prospect_open", { kvk: p.kvk_nummer })}

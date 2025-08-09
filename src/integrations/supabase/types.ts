@@ -22,6 +22,7 @@ export type Database = {
           id: string
           kvk_nummer: string
           last_checked_at: string | null
+          name: string | null
           non_mailing: boolean | null
           place: string | null
           province: string | null
@@ -42,6 +43,7 @@ export type Database = {
           id?: string
           kvk_nummer: string
           last_checked_at?: string | null
+          name?: string | null
           non_mailing?: boolean | null
           place?: string | null
           province?: string | null
@@ -62,6 +64,7 @@ export type Database = {
           id?: string
           kvk_nummer?: string
           last_checked_at?: string | null
+          name?: string | null
           non_mailing?: boolean | null
           place?: string | null
           province?: string | null
