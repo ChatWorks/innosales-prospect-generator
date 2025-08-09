@@ -135,14 +135,18 @@ const Dashboard = () => {
             >
               <div className="flex h-full w-full flex-col p-3">
                 {/* Sidebar top brand */}
-                <div className="flex items-center gap-3 h-14">
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(false)}
+                  className="flex items-center gap-3 h-14 w-full rounded-md text-left hover:bg-muted/60"
+                >
                   <img
                     src="/lovable-uploads/56606f98-8f2c-42df-bc47-d3cf8c50cfff.png"
                     alt="Innosales logo"
                     className="h-10 w-auto object-contain"
                   />
                   <span className="text-base font-semibold">Innosales</span>
-                </div>
+                </button>
 
                 {/* Nav */}
                 <div className="mt-2 space-y-1">
