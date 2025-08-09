@@ -33,7 +33,7 @@ export default function Header() {
               <Button
                 className={cn(
                   "h-9 md:h-10 rounded-full px-4",
-                  "bg-gradient-to-b from-[hsl(var(--gold))] to-[hsl(var(--gold-dark))]",
+                  "bg-[hsl(var(--gold))]",
                   "text-white shadow-elegant transition-transform duration-150",
                   "hover:scale-[1.02] active:scale-[0.98]"
                 )}
