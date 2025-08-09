@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import HeroPrompt from "@/components/HeroPrompt";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { Home, Activity, Plus, RefreshCcw, Zap, X } from "lucide-react";
 
 const navSegments = [
@@ -41,11 +42,99 @@ const SUGGESTIONS_POOL: string[] = [
   "Bedrijven in Noord-Holland die een webshop en B2B focus combineren.",
 ];
 
-const templateCards = [
-  { id: "scratch", title: "Start from scratch", desc: "Build from the ground up with total freedom and creativity" },
-  { id: "basic", title: "Basic Prompt", desc: "Execute a simple prompt to explore the mechanisms" },
-  { id: "extract", title: "Extract information", desc: "Extract specified information from a document" },
-  { id: "kvk", title: "KVK-lijst verrijken & scoren", desc: "Verrijk en scoor bedrijven op AI-gereedheid" },
+interface Prospect {
+  kvk_nummer: string;
+  naam: string;
+  plaats: string;
+  provincie: string;
+  vestigingen_count: number;
+  total_emp?: number | null;
+  reg_date?: string | null;
+  rechtsvorm?: string | null;
+  websites?: string[];
+  non_mailing?: boolean;
+  score: number; // 0-100
+}
+
+const placeholderProspects: Prospect[] = [
+  {
+    kvk_nummer: "12345678",
+    naam: "TechNova B.V.",
+    plaats: "Enschede",
+    provincie: "Overijssel",
+    vestigingen_count: 2,
+    total_emp: 24,
+    reg_date: "2016-04-12",
+    rechtsvorm: "Besloten Vennootschap",
+    websites: ["https://technova.example"],
+    non_mailing: false,
+    score: 84,
+  },
+  {
+    kvk_nummer: "23456789",
+    naam: "DataForge VOF",
+    plaats: "Hengelo",
+    provincie: "Overijssel",
+    vestigingen_count: 1,
+    total_emp: 12,
+    reg_date: "2019-09-02",
+    rechtsvorm: "Vennootschap onder firma",
+    websites: ["https://dataforge.example"],
+    non_mailing: false,
+    score: 76,
+  },
+  {
+    kvk_nummer: "34567890",
+    naam: "CloudPeak Solutions",
+    plaats: "Zwolle",
+    provincie: "Overijssel",
+    vestigingen_count: 3,
+    total_emp: 48,
+    reg_date: "2013-01-22",
+    rechtsvorm: "Besloten Vennootschap",
+    websites: ["https://cloudpeak.example"],
+    non_mailing: true,
+    score: 71,
+  },
+  {
+    kvk_nummer: "45678901",
+    naam: "AutomateX",
+    plaats: "Deventer",
+    provincie: "Overijssel",
+    vestigingen_count: 1,
+    total_emp: 8,
+    reg_date: "2021-06-15",
+    rechtsvorm: "Eenmanszaak",
+    websites: ["https://automatex.example"],
+    non_mailing: false,
+    score: 65,
+  },
+  {
+    kvk_nummer: "56789012",
+    naam: "InsightWorks B.V.",
+    plaats: "Apeldoorn",
+    provincie: "Gelderland",
+    vestigingen_count: 2,
+    total_emp: 33,
+    reg_date: "2015-11-05",
+    rechtsvorm: "Besloten Vennootschap",
+    websites: ["https://insightworks.example"],
+    non_mailing: false,
+    score: 80,
+  },
+  {
+    kvk_nummer: "67890123",
+    naam: "NextGen Analytics",
+    plaats: "Utrecht",
+    provincie: "Utrecht",
+    vestigingen_count: 1,
+    total_emp: 18,
+    reg_date: "2018-03-30",
+    rechtsvorm: "Besloten Vennootschap",
+    websites: ["https://nextgen.example"],
+    non_mailing: false,
+    score: 69,
+  },
 ];
 
 const Dashboard = () => {
@@ -53,17 +142,12 @@ const Dashboard = () => {
   const shellRef = useRef<HTMLDivElement>(null);
 const [mobileOpen, setMobileOpen] = useState(false);
 const [sidebarOpen, setSidebarOpen] = useState(false);
-// Suggesties: 9 per pagina, doorrouleren met de knop
-const [suggestionsPage, setSuggestionsPage] = useState(0);
-const suggestions = useMemo(() => {
-  const size = 9;
-  const start = (suggestionsPage * size) % SUGGESTIONS_POOL.length;
-  const slice = SUGGESTIONS_POOL.slice(start, start + size);
-  if (slice.length < size) {
-    return slice.concat(SUGGESTIONS_POOL.slice(0, size - slice.length));
-  }
-  return slice;
-}, [suggestionsPage]);
+// Suggestie: maximaal 1 tegelijk, doorrouleren met de knop
+const [suggestionIndex, setSuggestionIndex] = useState(0);
+const currentSuggestion = useMemo(
+  () => SUGGESTIONS_POOL[suggestionIndex % SUGGESTIONS_POOL.length],
+  [suggestionIndex]
+);
 
   // SEO
   useEffect(() => {
@@ -334,46 +418,90 @@ const suggestions = useMemo(() => {
 </header>
 
             {/* Chips row */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-{suggestions.map((s, idx) => (
+<div className="mt-6 flex flex-wrap items-center justify-center gap-2">
   <button
-    key={idx}
-    onClick={() => prefillPrompt(s)}
+    onClick={() => prefillPrompt(currentSuggestion)}
     className="rounded-full border bg-white/80 backdrop-blur px-3 py-1 text-sm hover:bg-white"
   >
-    {s}
+    {currentSuggestion}
   </button>
-))}
-<button
-  aria-label="Vernieuw suggesties"
-  onClick={() => setSuggestionsPage((p) => p + 1)}
-  className="ml-1 inline-flex items-center rounded-full border bg-white/80 px-2 py-1 text-sm hover:bg-white"
->
-  <RefreshCcw className="h-4 w-4" />
-</button>
-            </div>
+  <button
+    aria-label="Vernieuw suggestie"
+    onClick={() => setSuggestionIndex((i) => i + 1)}
+    className="ml-1 inline-flex items-center rounded-full border bg-white/80 px-2 py-1 text-sm hover:bg-white"
+  >
+    <RefreshCcw className="h-4 w-4" />
+  </button>
+</div>
 
             {/* Prompt card */}
             <div className="mt-4">
               <HeroPrompt key={keySeed} showHeader={false} />
             </div>
 
-            {/* Divider text */}
-<div className="my-6 flex items-center gap-3 text-sm text-muted-foreground">
-  <div className="h-px flex-1 bg-border" />
-  <span>of kies een sjabloon</span>
-  <div className="h-px flex-1 bg-border" />
-</div>
-
-            {/* Templates grid */}
-            <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-              {templateCards.map((t) => (
-                <button key={t.id} onClick={() => handleTemplateUse(t.id)} className="text-left rounded-xl border bg-white/70 backdrop-blur-md p-4 hover:bg-white">
-                  <div className="font-medium">{t.title}</div>
-                  <p className="mt-1 text-xs text-muted-foreground">{t.desc}</p>
-                </button>
-              ))}
-            </div>
+<section className="mt-8">
+  <header className="mb-3">
+    <h2 className="text-lg font-semibold">Prospects (voorbeelddata)</h2>
+    <p className="text-sm text-muted-foreground">Dit is een voorbeeldlijst met velden die we uit de KVK-API zullen vullen.</p>
+  </header>
+  <div className="overflow-auto rounded-xl border bg-white/70 backdrop-blur-md">
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Naam</TableHead>
+          <TableHead>KVK</TableHead>
+          <TableHead>Plaats</TableHead>
+          <TableHead>Provincie</TableHead>
+          <TableHead>Vest.</TableHead>
+          <TableHead>Medew.</TableHead>
+          <TableHead>Inschrijfdatum</TableHead>
+          <TableHead>Rechtsvorm</TableHead>
+          <TableHead>Website</TableHead>
+          <TableHead>Non-mailing</TableHead>
+          <TableHead>Score</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {placeholderProspects.map((p) => (
+          <TableRow key={p.kvk_nummer}>
+            <TableCell className="font-medium">{p.naam}</TableCell>
+            <TableCell className="font-mono text-xs">{p.kvk_nummer}</TableCell>
+            <TableCell>{p.plaats}</TableCell>
+            <TableCell>{p.provincie}</TableCell>
+            <TableCell>{p.vestigingen_count}</TableCell>
+            <TableCell>{p.total_emp ?? "—"}</TableCell>
+            <TableCell>{p.reg_date ?? "—"}</TableCell>
+            <TableCell>{p.rechtsvorm ?? "—"}</TableCell>
+            <TableCell>
+              {p.websites?.[0] ? (
+                <a
+                  href={p.websites[0]}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-2"
+                >
+                  {(p.websites[0] || "").replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                </a>
+              ) : (
+                "—"
+              )}
+            </TableCell>
+            <TableCell>
+              <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs">
+                {p.non_mailing ? "Ja" : "Nee"}
+              </span>
+            </TableCell>
+            <TableCell>
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-[hsl(var(--gold))] text-white">
+                {p.score}
+              </span>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+</section>
           </div>
         </section>
       </div>
