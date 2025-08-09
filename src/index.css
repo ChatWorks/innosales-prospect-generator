@@ -111,7 +111,7 @@ All colors MUST be HSL. */
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
   }
 }
 
@@ -127,24 +127,7 @@ All colors MUST be HSL. */
   }
 
   .glass-panel {
-    @apply rounded-2xl border bg-background/70 backdrop-blur-xl;
+    @apply rounded-lg md:rounded-xl border bg-background/60 backdrop-blur-xl;
     box-shadow: var(--shadow-soft);
   }
-
-  .ambient-gold {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      radial-gradient(600px 600px at 20% 30%, hsl(var(--brand) / 0.06), transparent 60%),
-      radial-gradient(800px 800px at 80% 70%, hsl(var(--brand) / 0.04), transparent 60%);
-    background-repeat: no-repeat;
-    background-size: 120% 120%, 120% 120%;
-    animation: ambient-move 20s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes ambient-move {
-  0% { background-position: 20% 30%, 80% 70%; }
-  100% { background-position: 60% 40%, 30% 80%; }
 }
