@@ -18,10 +18,10 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
   const redirectTo = `${window.location.origin}/dashboard`;
 
   const handleEmailOnlySignIn = async (e?: React.FormEvent) => {
@@ -124,27 +124,42 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
 
         {/* Body */}
         {mode === "signin" ? (
-          <form onSubmit={handleEmailOnlySignIn} className="px-6 mt-5">
+          <form onSubmit={(e) => { if (password.trim().length > 0) { void handleEmailPassword(e); } else { void handleEmailOnlySignIn(e); } }} className="px-6 mt-5">
             <label htmlFor="email" className="block text-sm mb-2">E-mail</label>
             <Input
               id="email"
               type="email"
               placeholder="naam@bedrijf.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); if (mode === "signin") setShowPassword(e.target.value.length > 0); }}
               required
               aria-label="E-mailadres"
               className="h-11"
             />
 
+            {showPassword && (
+              <>
+                <label htmlFor="password" className="block text-sm mb-2 mt-3">Wachtwoord</label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Wachtwoord"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  aria-label="Wachtwoord"
+                  className="h-11"
+                />
+              </>
+            )}
+
             <Button type="submit" className="mt-3 w-full rounded-md h-11 bg-foreground text-background shadow-[0_3px_0_rgba(0,0,0,0.35)] hover:opacity-95" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Doorgaan met e-mail
+                  {password.trim().length > 0 ? "Inloggen" : "Doorgaan met e-mail"}
                 </>
               ) : (
-                <>Doorgaan met e-mail</>
+                <>{password.trim().length > 0 ? "Inloggen" : "Doorgaan met e-mail"}</>
               )}
             </Button>
 
