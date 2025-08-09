@@ -1,4 +1,5 @@
 import HeroPrompt from "@/components/HeroPrompt";
+import Header from "@/components/Header";
 
 const Index = () => {
   return (
@@ -14,6 +15,7 @@ const Index = () => {
             "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 100%)",
         }}
       />
+      <Header />
       <div className="relative z-10">
         <HeroPrompt />
       </div>
