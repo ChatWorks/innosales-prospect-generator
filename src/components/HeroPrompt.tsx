@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -22,7 +22,16 @@ const HeroPrompt = () => {
   return (
     <section aria-label="Prospect prompt" className="relative">
       {/* Dotted background */}
-      <div className="absolute inset-0 bg-dots pointer-events-none" aria-hidden="true" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: "radial-gradient(hsl(var(--dot)) 1px, transparent 1px)",
+          backgroundSize: "18px 18px",
+          maskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 100%)",
+        }}
+      />
 
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6">
         <header className="mb-8 text-center">
@@ -36,21 +45,29 @@ const HeroPrompt = () => {
 
         <form
           onSubmit={onSubmit}
-          className="glass-panel focus-within:ring-2 focus-within:ring-brand focus-within:ring-offset-2 focus-within:ring-offset-background transition-all duration-300"
+          className="group relative w-full rounded-2xl border border-white/60 bg-white/70 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 focus-within:shadow-[0_12px_40px_hsla(var(--gold)/0.15)] focus-within:ring-2 focus-within:ring-[hsl(var(--gold))]/50"
         >
-          <div className="relative flex items-center">
-            <Input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder="Beschrijf je ideale prospect…"
-              className="h-14 md:h-16 pr-24 bg-transparent border-0 shadow-none focus-visible:ring-0 text-lg md:text-xl"
-              aria-label="Prompt invoerveld"
-            />
-            <div className="absolute right-2">
-              <Button type="submit" variant="brand" size="lg" aria-label="Verstuur">
-                <Send className="opacity-90" />
-              </Button>
-            </div>
+          <label htmlFor="prospect-prompt" className="sr-only">
+            Beschrijf je ideale prospect
+          </label>
+          <Textarea
+            id="prospect-prompt"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Beschrijf je ideale prospect…"
+            className="w-full resize-none bg-transparent outline-none text-base md:text-lg leading-relaxed placeholder:text-neutral-400 p-5 md:p-6 pr-16 md:pr-20 min-h-[120px] md:min-h-[140px] border-0 shadow-none focus-visible:ring-0"
+            rows={4}
+            aria-label="Prompt invoerveld"
+          />
+          <div className="absolute bottom-3 right-3">
+            <Button
+              type="submit"
+              size="icon"
+              className="h-10 w-10 rounded-full bg-gradient-to-b from-[hsl(var(--gold))] to-[hsl(var(--gold-dark))] text-white shadow-md transition-transform duration-150 hover:scale-[1.03] active:scale-[0.98]"
+              aria-label="Verstuur prompt"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
         </form>
 
