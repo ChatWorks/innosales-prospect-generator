@@ -11,10 +11,34 @@ const navSegments = [
   "Untitled Segment",
 ];
 
-const chipPresets: { label: string; value: string }[] = [
-  { label: "Chat-based SDS Retrieval", value: "AI-ready bedrijven" },
-  { label: "Incident Report Processor", value: "Nieuwe inschrijvingen deze week" },
-  { label: "Scheduled Quality Check", value: "50 medewerkers in Regio Twente" },
+const SUGGESTIONS_POOL: string[] = [
+  "Ik zoek bedrijven in Enschede die mogelijk geïnteresseerd zijn in mijn services.",
+  "Bedrijven in Twente met 10–50 medewerkers die willen groeien.",
+  "Mkb's in Overijssel met een actieve website en interesse in automatisering.",
+  "Scale-ups in de Randstad die recent vacatures voor IT/AI plaatsten.",
+  "Nieuwe inschrijvingen van de afgelopen 30 dagen in mijn regio.",
+  "Bedrijven ouder dan 5 jaar met meerdere vestigingen in Oost-Nederland.",
+  "Organisaties in Utrecht met een datagedreven profiel en digitale ambitie.",
+  "Familiebedrijven in Gelderland die moderniseren of digitaliseren.",
+  "Dienstverleners in Noord-Brabant met 5–25 medewerkers en online zichtbaarheid.",
+  "Bedrijven in Zwolle met potentieel voor procesautomatisering.",
+  "B2B-bedrijven in Zuid-Holland die internationaal actief zijn.",
+  "Bedrijven met hoofdkantoor in Amsterdam en >3 vestigingen.",
+  "Bedrijven in Brabant met groei in het afgelopen jaar.",
+  "Organisaties met een duidelijke AI- of datafocus op hun website.",
+  "Bedrijven in Rotterdam die mogelijk openstaan voor AI-consultancy.",
+  "Startups in Eindhoven met 1–3 jaar bestaansduur.",
+  "Bedrijven met recente naamswijziging of rebranding (signaal voor verandering).",
+  "Bedrijven in Friesland met een technische of digitale propositie.",
+  "Bedrijven die actief zijn op LinkedIn en regelmatig publiceren.",
+  "Bedrijven in Den Haag met 25–100 medewerkers.",
+  "Nieuwe vestigingen in mijn provincie in de laatste 90 dagen.",
+  "Bedrijven met een duidelijke innovatie-afdeling of lab.",
+  "Bedrijven met remote-first teams en digitale processen.",
+  "Bedrijven in Enschede met groeiende vacaturevolumes.",
+  "Bedrijven met een duidelijke IT/Cloud vermelding op de site.",
+  "Bedrijven met internationale vestigingen maar Nederlands hoofdkantoor.",
+  "Bedrijven in Noord-Holland die een webshop en B2B focus combineren.",
 ];
 
 const templateCards = [
@@ -27,8 +51,19 @@ const templateCards = [
 const Dashboard = () => {
   const [keySeed, setKeySeed] = useState(0);
   const shellRef = useRef<HTMLDivElement>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const [mobileOpen, setMobileOpen] = useState(false);
+const [sidebarOpen, setSidebarOpen] = useState(false);
+// Suggesties: 9 per pagina, doorrouleren met de knop
+const [suggestionsPage, setSuggestionsPage] = useState(0);
+const suggestions = useMemo(() => {
+  const size = 9;
+  const start = (suggestionsPage * size) % SUGGESTIONS_POOL.length;
+  const slice = SUGGESTIONS_POOL.slice(start, start + size);
+  if (slice.length < size) {
+    return slice.concat(SUGGESTIONS_POOL.slice(0, size - slice.length));
+  }
+  return slice;
+}, [suggestionsPage]);
 
   // SEO
   useEffect(() => {
@@ -293,24 +328,29 @@ const Dashboard = () => {
         <section className="flex-1">
 
           <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-32 md:pt-36 pb-10 md:pb-12">
-            <header className="text-center">
-              <h1 className="text-2xl md:text-3xl font-semibold">Start building your segment</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Specificeer je requirements en laat AI je segment genereren.</p>
-            </header>
+<header className="text-center">
+  <h1 className="text-2xl md:text-3xl font-semibold">Start je segment</h1>
+  <p className="mt-1 text-sm text-muted-foreground">Geef je wensen op en laat AI je prospectlijst genereren.</p>
+</header>
 
             {/* Chips row */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-              {chipPresets.map((c) => (
-                <button key={c.label} onClick={() => handleChipClick(c)} className="rounded-full border bg-white/80 backdrop-blur px-3 py-1 text-sm hover:bg-white">
-                  {c.label}
-                </button>
-              ))}
-              <button
-                aria-label="Vernieuw suggesties"
-                className="ml-1 inline-flex items-center rounded-full border bg-white/80 px-2 py-1 text-sm hover:bg-white"
-              >
-                <RefreshCcw className="h-4 w-4" />
-              </button>
+{suggestions.map((s, idx) => (
+  <button
+    key={idx}
+    onClick={() => prefillPrompt(s)}
+    className="rounded-full border bg-white/80 backdrop-blur px-3 py-1 text-sm hover:bg-white"
+  >
+    {s}
+  </button>
+))}
+<button
+  aria-label="Vernieuw suggesties"
+  onClick={() => setSuggestionsPage((p) => p + 1)}
+  className="ml-1 inline-flex items-center rounded-full border bg-white/80 px-2 py-1 text-sm hover:bg-white"
+>
+  <RefreshCcw className="h-4 w-4" />
+</button>
             </div>
 
             {/* Prompt card */}
@@ -319,11 +359,11 @@ const Dashboard = () => {
             </div>
 
             {/* Divider text */}
-            <div className="my-6 flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="h-px flex-1 bg-border" />
-              <span>or explore ready made templates</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
+<div className="my-6 flex items-center gap-3 text-sm text-muted-foreground">
+  <div className="h-px flex-1 bg-border" />
+  <span>of kies een sjabloon</span>
+  <div className="h-px flex-1 bg-border" />
+</div>
 
             {/* Templates grid */}
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
