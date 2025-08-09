@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -116,6 +116,8 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
         "max-w-[420px] rounded-3xl border bg-white text-foreground",
         "shadow-[0_10px_40px_rgba(0,0,0,0.12)] p-0 overflow-hidden"
       )}>
+        <DialogTitle className="sr-only">Inloggen</DialogTitle>
+        <DialogDescription className="sr-only">Meld je aan om door te gaan naar Innosales</DialogDescription>
         {/* Header area to match screenshot */}
         <div className="px-6 pt-6">
           <h2 className="text-2xl font-semibold leading-tight">Inloggen</h2>

@@ -74,7 +74,7 @@ const HeroPrompt = () => {
             Genereer prospects met één krachtige prompt
           </h1>
           <p className="mt-6 md:mt-8 text-lg text-muted-foreground leading-relaxed">
-            Bouw later je workflow — vandaag start je met één duidelijke instructie.
+            Bouw later je segment — vandaag start je met één duidelijke instructie.
           </p>
         </header>
 
@@ -105,7 +105,7 @@ const HeroPrompt = () => {
             <Button
               type="submit"
               size="icon"
-              className="h-10 w-10 rounded-full bg-gradient-to-b from-[hsl(var(--gold))] to-[hsl(var(--gold-dark))] text-white shadow-md transition-transform duration-150 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="h-10 w-10 rounded-full bg-[hsl(var(--gold))] text-white shadow-md transition-transform duration-150 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               aria-label="Verstuur prompt"
               disabled={!canSubmit || loading}
             >
