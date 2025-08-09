@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import HeroPrompt from "@/components/HeroPrompt";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Home, Activity, Plus, RefreshCcw, Zap, X } from "lucide-react";
 
 const navSegments = [
@@ -444,36 +444,34 @@ const currentSuggestion = useMemo(
     <h2 className="text-lg font-semibold">Prospects (voorbeelddata)</h2>
     <p className="text-sm text-muted-foreground">Dit is een voorbeeldlijst met velden die we uit de KVK-API zullen vullen.</p>
   </header>
-  <div className="overflow-auto rounded-xl border bg-white/70 backdrop-blur-md">
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Naam</TableHead>
-          <TableHead>KVK</TableHead>
-          <TableHead>Plaats</TableHead>
-          <TableHead>Provincie</TableHead>
-          <TableHead>Vest.</TableHead>
-          <TableHead>Medew.</TableHead>
-          <TableHead>Inschrijfdatum</TableHead>
-          <TableHead>Rechtsvorm</TableHead>
-          <TableHead>Website</TableHead>
-          <TableHead>Non-mailing</TableHead>
-          <TableHead>Score</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {placeholderProspects.map((p) => (
-          <TableRow key={p.kvk_nummer}>
-            <TableCell className="font-medium">{p.naam}</TableCell>
-            <TableCell className="font-mono text-xs">{p.kvk_nummer}</TableCell>
-            <TableCell>{p.plaats}</TableCell>
-            <TableCell>{p.provincie}</TableCell>
-            <TableCell>{p.vestigingen_count}</TableCell>
-            <TableCell>{p.total_emp ?? "—"}</TableCell>
-            <TableCell>{p.reg_date ?? "—"}</TableCell>
-            <TableCell>{p.rechtsvorm ?? "—"}</TableCell>
-            <TableCell>
-              {p.websites?.[0] ? (
+  <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+    {placeholderProspects.map((p) => (
+      <button
+        key={p.kvk_nummer}
+        onClick={() => console.info("prospect_open", { kvk: p.kvk_nummer })}
+        className="text-left"
+      >
+        <Card className="rounded-xl border bg-white/70 backdrop-blur-md hover:bg-white transition-colors">
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between gap-3">
+              <CardTitle className="text-base font-medium leading-tight">{p.naam}</CardTitle>
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-[hsl(var(--gold))] text-white">
+                {p.score}
+              </span>
+            </div>
+            <CardDescription className="mt-1 text-sm">
+              {p.plaats}, {p.provincie}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center rounded-full border px-2 py-0.5">KVK {p.kvk_nummer}</span>
+              <span className="inline-flex items-center rounded-full border px-2 py-0.5">Vestigingen {p.vestigingen_count}</span>
+              <span className="inline-flex items-center rounded-full border px-2 py-0.5">Medew. {p.total_emp ?? "—"}</span>
+              <span className="inline-flex items-center rounded-full border px-2 py-0.5">{p.rechtsvorm ?? "—"}</span>
+            </div>
+            {p.websites?.[0] && (
+              <div className="mt-2 text-xs">
                 <a
                   href={p.websites[0]}
                   target="_blank"
@@ -482,24 +480,12 @@ const currentSuggestion = useMemo(
                 >
                   {(p.websites[0] || "").replace(/^https?:\/\//, "").replace(/\/$/, "")}
                 </a>
-              ) : (
-                "—"
-              )}
-            </TableCell>
-            <TableCell>
-              <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs">
-                {p.non_mailing ? "Ja" : "Nee"}
-              </span>
-            </TableCell>
-            <TableCell>
-              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-[hsl(var(--gold))] text-white">
-                {p.score}
-              </span>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </button>
+    ))}
   </div>
 </section>
           </div>
