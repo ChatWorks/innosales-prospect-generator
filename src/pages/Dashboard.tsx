@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import HeroPrompt from "@/components/HeroPrompt";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Home, Activity, Plus, RefreshCcw, Zap, CalendarDays, Menu, X } from "lucide-react";
+import { Home, Activity, Plus, RefreshCcw, Zap, X } from "lucide-react";
 
 const navSegments = [
   "AI-curious Twente",
@@ -28,6 +28,7 @@ const Dashboard = () => {
   const [keySeed, setKeySeed] = useState(0);
   const shellRef = useRef<HTMLDivElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // SEO
   useEffect(() => {
@@ -52,6 +53,14 @@ const Dashboard = () => {
   useEffect(() => {
     console.info("dashboard_loaded");
   }, []);
+
+  const handleLogoClick = () => {
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      setSidebarOpen((o) => !o);
+    } else {
+      setMobileOpen(true);
+    }
+  };
 
   const focusPrompt = () => {
     setTimeout(() => {
@@ -91,46 +100,60 @@ const Dashboard = () => {
       <div ref={shellRef} className="relative z-10 min-h-screen">
         {/* Sidebar */}
         <>
-          {/* Mobile hamburger */}
-          <button
-            aria-label="Open sidebar"
-            onClick={() => setMobileOpen(true)}
-            className="fixed left-4 top-4 z-50 inline-flex lg:hidden items-center justify-center h-10 w-10 rounded-lg border bg-white/70 backdrop-blur-md shadow-soft"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          {/* Header with logo (click = toggle sidebar) */}
+          <header className="fixed inset-x-0 top-0 z-30">
+            <div className="mx-auto max-w-[1200px] px-4 md:px-6">
+              <div className="mt-4 md:mt-6 rounded-xl border bg-background/60 backdrop-blur-md shadow-soft">
+                <div className="h-12 md:h-14 px-4 sm:px-5 flex items-center justify-between">
+                  <button
+                    onClick={handleLogoClick}
+                    className="inline-flex items-center gap-2.5 select-none"
+                    aria-label="Toggle menu"
+                  >
+                    <img
+                      src="/lovable-uploads/56606f98-8f2c-42df-bc47-d3cf8c50cfff.png"
+                      alt="Innosales logo"
+                      className="h-6 w-auto object-contain"
+                      loading="eager"
+                    />
+                    <span className="hidden sm:inline text-sm md:text-base text-muted-foreground font-medium">Innosales</span>
+                  </button>
 
-          {/* Desktop overlay rail */}
+                  <div className="hidden md:flex items-center gap-2 rounded-full border bg-white/70 backdrop-blur-md px-3 py-1 text-xs">
+                    <Zap className="h-4 w-4" />
+                    <span>0 / 100 runs gebruikt</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Desktop overlay rail (click to toggle) */}
           <div
-            className="group fixed left-0 top-0 z-40 hidden lg:flex h-dvh w-14 hover:w-64 focus-within:w-64 transition-all duration-300 ease-out bg-white/70 backdrop-blur-md border-r border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.06)] after:absolute after:right-[-16px] after:top-0 after:h-full after:w-4"
+            className={`fixed left-0 top-0 z-40 hidden lg:flex h-dvh ${sidebarOpen ? "w-64" : "w-14"} transition-all duration-300 ease-out bg-white/70 backdrop-blur-md border-r border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.06)] after:absolute after:right-[-16px] after:top-0 after:h-full after:w-4`}
+            aria-expanded={sidebarOpen}
           >
-            <div className="flex h-full w-full flex-col p-3">
-              {/* Logo hit-area */}
-              <button
-                className="h-14 w-14 rounded-md border bg-[hsl(var(--gold))] flex items-center justify-center"
-                aria-label="Innosales"
-              />
-
+            <div className="flex h-full w-full flex-col p-3 pt-16">
               {/* Nav */}
-              <div className="mt-4 space-y-1">
+              <div className="space-y-1">
                 <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
                   <Home className="h-4 w-4" />
-                  <span className="ml-3 whitespace-nowrap text-sm text-muted-foreground opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Home</span>
+                  <span className={`ml-3 whitespace-nowrap text-sm text-muted-foreground transition-all duration-200 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1 pointer-events-none"}`}>Home</span>
                 </button>
 
                 <div className="mt-2 px-2">
-                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground opacity-0 translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Activiteit</div>
+                  <div className={`text-[11px] uppercase tracking-wide text-muted-foreground transition-all duration-200 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1"}`}>Activiteit</div>
                 </div>
                 <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
                   <Activity className="h-4 w-4" />
-                  <span className="ml-3 whitespace-nowrap text-sm text-muted-foreground opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Alle activiteit</span>
+                  <span className={`ml-3 whitespace-nowrap text-sm text-muted-foreground transition-all duration-200 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1 pointer-events-none"}`}>Alle activiteit</span>
                 </button>
               </div>
 
               {/* Segmenten */}
               <div className="mt-3">
                 <div className="mb-2 flex items-center justify-between px-2">
-                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground opacity-0 translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Segmenten</div>
+                  <div className={`text-[11px] uppercase tracking-wide text-muted-foreground transition-all duration-200 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1"}`}>Segmenten</div>
                   <button
                     aria-label="Nieuw segment"
                     onClick={() => handleTemplateUse("new-segment")}
@@ -144,29 +167,11 @@ const Dashboard = () => {
                     <li key={s}>
                       <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/60">
                         <span className="h-2 w-2 rounded-full bg-muted-foreground/50" aria-hidden />
-                        <span className="ml-3 whitespace-nowrap text-sm opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">{s}</span>
+                        <span className={`ml-3 whitespace-nowrap text-sm transition-all duration-200 ${sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1 pointer-events-none"}`}>{s}</span>
                       </button>
                     </li>
                   ))}
                 </ul>
-              </div>
-
-              {/* Bottom */}
-              <div className="mt-auto space-y-3 opacity-0 translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">
-                <div className="rounded-xl border bg-white/70 backdrop-blur-md p-3 shadow-soft">
-                  <div className="flex items-center gap-2">
-                    <span className="h-4 w-4 rounded bg-muted" aria-hidden />
-                    <div className="text-sm font-medium">Default Project</div>
-                  </div>
-                  <div className="mt-2 text-xs text-muted-foreground">Runs: 0 / 100</div>
-                  <Progress value={0} className="mt-2" />
-                </div>
-                <Button
-                  className="w-full justify-center bg-[hsl(var(--gold))] text-white"
-                  onClick={() => handleTemplateUse("new-segment")}
-                >
-                  + Nieuw segment
-                </Button>
               </div>
             </div>
           </div>
@@ -248,13 +253,8 @@ const Dashboard = () => {
 
         {/* Content */}
         <section className="flex-1">
-          {/* Top-right usage pill */}
-          <div className="absolute right-4 top-4 hidden md:flex items-center gap-2 rounded-full border bg-white/70 backdrop-blur-md px-3 py-1 text-xs">
-            <Zap className="h-4 w-4" />
-            <span>0 / 100 runs gebruikt</span>
-          </div>
 
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 md:py-12">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-28 md:pt-32 pb-10 md:pb-12">
             <header className="text-center">
               <h1 className="text-2xl md:text-3xl font-semibold">Start building your segment</h1>
               <p className="mt-1 text-sm text-muted-foreground">Specificeer je requirements en laat AI je segment genereren.</p>
