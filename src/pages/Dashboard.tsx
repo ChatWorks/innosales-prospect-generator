@@ -105,7 +105,7 @@ const Dashboard = () => {
           {/* Header with logo (click = toggle sidebar) */}
           {/* Full-width header with logo */}
           <header className="fixed inset-x-0 top-0 z-30 bg-white/70 backdrop-blur-md border-b border-white/60">
-            <div className="mx-auto max-w-[1200px] px-4 md:px-6 h-12 md:h-14 flex items-center justify-between">
+            <div className="w-full px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
               <button
                 onClick={handleLogoClick}
                 className="inline-flex items-center gap-3 select-none"
@@ -114,10 +114,10 @@ const Dashboard = () => {
                 <img
                   src="/lovable-uploads/56606f98-8f2c-42df-bc47-d3cf8c50cfff.png"
                   alt="Innosales logo"
-                  className="h-9 md:h-10 w-auto object-contain"
+                  className="h-11 md:h-12 w-auto object-contain"
                   loading="eager"
                 />
-                <span className="hidden sm:inline text-base md:text-lg text-foreground font-medium">Innosales</span>
+                <span className="hidden sm:inline text-lg md:text-xl text-foreground font-semibold">Innosales</span>
               </button>
 
               <div className="hidden md:flex items-center gap-2 rounded-full border bg-white/70 backdrop-blur-md px-3 py-1 text-xs">
@@ -133,12 +133,22 @@ const Dashboard = () => {
               className="fixed left-0 top-0 z-40 hidden lg:flex h-dvh w-64 transition-all duration-300 ease-out bg-white/70 backdrop-blur-md border-r border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
               aria-expanded={sidebarOpen}
             >
-              <div className="flex h-full w-full flex-col p-3 pt-16">
+              <div className="flex h-full w-full flex-col p-3">
+                {/* Sidebar top brand */}
+                <div className="flex items-center gap-3 h-14">
+                  <img
+                    src="/lovable-uploads/56606f98-8f2c-42df-bc47-d3cf8c50cfff.png"
+                    alt="Innosales logo"
+                    className="h-10 w-auto object-contain"
+                  />
+                  <span className="text-base font-semibold">Innosales</span>
+                </div>
+
                 {/* Nav */}
-                <div className="space-y-1">
+                <div className="mt-2 space-y-1">
                   <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
                     <Home className="h-4 w-4" />
-                    <span className="ml-1 whitespace-nowrap text-sm text-muted-foreground">Home</span>
+                    <span className="whitespace-nowrap text-sm text-muted-foreground">Home</span>
                   </button>
 
                   <div className="mt-2 px-2">
@@ -146,7 +156,7 @@ const Dashboard = () => {
                   </div>
                   <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
                     <Activity className="h-4 w-4" />
-                    <span className="ml-1 whitespace-nowrap text-sm text-muted-foreground">Alle activiteit</span>
+                    <span className="whitespace-nowrap text-sm text-muted-foreground">Alle activiteit</span>
                   </button>
                 </div>
 
@@ -167,7 +177,7 @@ const Dashboard = () => {
                       <li key={s}>
                         <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/60">
                           <span className="h-2 w-2 rounded-full bg-muted-foreground/50" aria-hidden />
-                          <span className="ml-1 whitespace-nowrap text-sm">{s}</span>
+                          <span className="whitespace-nowrap text-sm">{s}</span>
                         </button>
                       </li>
                     ))}
@@ -208,8 +218,13 @@ const Dashboard = () => {
                   <X className="h-4 w-4" />
                 </button>
 
-                <div className="mt-1">
-                  <div className="h-12 w-12 rounded-md border bg-[hsl(var(--gold))]" aria-hidden />
+                <div className="flex items-center gap-3 h-14 mt-1">
+                  <img
+                    src="/lovable-uploads/56606f98-8f2c-42df-bc47-d3cf8c50cfff.png"
+                    alt="Innosales logo"
+                    className="h-10 w-auto object-contain"
+                  />
+                  <span className="text-base font-semibold">Innosales</span>
                 </div>
 
                 <nav className="mt-4 space-y-1 text-sm">
@@ -273,7 +288,7 @@ const Dashboard = () => {
         {/* Content */}
         <section className="flex-1">
 
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-28 md:pt-32 pb-10 md:pb-12">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-32 md:pt-36 pb-10 md:pb-12">
             <header className="text-center">
               <h1 className="text-2xl md:text-3xl font-semibold">Start building your segment</h1>
               <p className="mt-1 text-sm text-muted-foreground">Specificeer je requirements en laat AI je segment genereren.</p>
