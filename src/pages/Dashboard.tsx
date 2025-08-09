@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import HeroPrompt from "@/components/HeroPrompt";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Home, Activity, Plus, RefreshCcw, Zap, CalendarDays } from "lucide-react";
+import { Home, Activity, Plus, RefreshCcw, Zap, CalendarDays, Menu, X } from "lucide-react";
 
 const navSegments = [
   "AI-curious Twente",
@@ -27,6 +27,7 @@ const templateCards = [
 const Dashboard = () => {
   const [keySeed, setKeySeed] = useState(0);
   const shellRef = useRef<HTMLDivElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // SEO
   useEffect(() => {
@@ -87,55 +88,53 @@ const Dashboard = () => {
         }}
       />
 
-      <div ref={shellRef} className="relative z-10 flex min-h-screen">
+      <div ref={shellRef} className="relative z-10 min-h-screen">
         {/* Sidebar */}
-        <aside className="hidden md:flex w-64 shrink-0 border-r bg-background/60 backdrop-blur-md">
-          <div className="flex h-screen flex-col p-4 gap-3">
-            {/* Brand */}
-            <div className="flex items-center justify-between px-2 pt-1 pb-3">
-              <div className="inline-flex items-center gap-2.5 select-none">
-                <div className="h-7 w-7 rounded-md border bg-[hsl(var(--gold))]" aria-hidden />
-                <span className="text-base font-semibold">Innosales</span>
-              </div>
-            </div>
+        <>
+          {/* Mobile hamburger */}
+          <button
+            aria-label="Open sidebar"
+            onClick={() => setMobileOpen(true)}
+            className="fixed left-4 top-4 z-50 inline-flex lg:hidden items-center justify-center h-10 w-10 rounded-lg border bg-white/70 backdrop-blur-md shadow-soft"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
-            {/* Nav */}
-            <nav className="space-y-5 text-sm">
-              {/* Home */}
-              <div>
-                <button className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left hover:bg-muted/60">
+          {/* Desktop overlay rail */}
+          <div
+            className="group fixed left-0 top-0 z-40 hidden lg:flex h-dvh w-14 hover:w-64 focus-within:w-64 transition-all duration-300 ease-out bg-white/70 backdrop-blur-md border-r border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.06)] after:absolute after:right-[-16px] after:top-0 after:h-full after:w-4"
+          >
+            <div className="flex h-full w-full flex-col p-3">
+              {/* Logo hit-area */}
+              <button
+                className="h-14 w-14 rounded-md border bg-[hsl(var(--gold))] flex items-center justify-center"
+                aria-label="Innosales"
+              />
+
+              {/* Nav */}
+              <div className="mt-4 space-y-1">
+                <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
                   <Home className="h-4 w-4" />
-                  <span className="text-[0.95rem] font-medium">Home</span>
+                  <span className="ml-3 whitespace-nowrap text-sm text-muted-foreground opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Home</span>
+                </button>
+
+                <div className="mt-2 px-2">
+                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground opacity-0 translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Activiteit</div>
+                </div>
+                <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
+                  <Activity className="h-4 w-4" />
+                  <span className="ml-3 whitespace-nowrap text-sm text-muted-foreground opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Alle activiteit</span>
                 </button>
               </div>
 
-              {/* Activiteit */}
-              <div className="space-y-1">
-                <div className="px-2 text-[11px] uppercase tracking-wide text-muted-foreground">Activiteit</div>
-                <ul className="mt-1 space-y-1">
-                  <li>
-                    <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted/60">
-                      <Activity className="h-4 w-4" />
-                      <span>Alle activiteit</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted/60">
-                      <Activity className="h-4 w-4 opacity-70" />
-                      <span>Bewaarde weergaven</span>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-
               {/* Segmenten */}
-              <div>
-                <div className="mb-2 flex items-center justify-between px-2 text-[11px] uppercase tracking-wide text-muted-foreground">
-                  <span>Segmenten</span>
+              <div className="mt-3">
+                <div className="mb-2 flex items-center justify-between px-2">
+                  <div className="text-[11px] uppercase tracking-wide text-muted-foreground opacity-0 translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">Segmenten</div>
                   <button
                     aria-label="Nieuw segment"
                     onClick={() => handleTemplateUse("new-segment")}
-                    className="inline-flex h-6 w-6 items-center justify-center rounded-md border hover:bg-muted/60"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md border hover:bg-muted/60"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -143,48 +142,109 @@ const Dashboard = () => {
                 <ul className="space-y-1">
                   {navSegments.map((s) => (
                     <li key={s}>
-                      <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted/60">
+                      <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/60">
                         <span className="h-2 w-2 rounded-full bg-muted-foreground/50" aria-hidden />
-                        <span className="truncate">{s}</span>
+                        <span className="ml-3 whitespace-nowrap text-sm opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">{s}</span>
                       </button>
                     </li>
                   ))}
                 </ul>
               </div>
-            </nav>
 
-            {/* Callout */}
-            <div className="rounded-xl border bg-white/70 backdrop-blur-md p-3 shadow-soft">
-              <div className="flex items-start gap-2">
-                <div className="rounded-md border bg-muted/40 p-1.5">
-                  <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              {/* Bottom */}
+              <div className="mt-auto space-y-3 opacity-0 translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">
+                <div className="rounded-xl border bg-white/70 backdrop-blur-md p-3 shadow-soft">
+                  <div className="flex items-center gap-2">
+                    <span className="h-4 w-4 rounded bg-muted" aria-hidden />
+                    <div className="text-sm font-medium">Default Project</div>
+                  </div>
+                  <div className="mt-2 text-xs text-muted-foreground">Runs: 0 / 100</div>
+                  <Progress value={0} className="mt-2" />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Plan een call om je segment of export te bespreken met een AI‑expert.
-                </p>
+                <Button
+                  className="w-full justify-center bg-[hsl(var(--gold))] text-white"
+                  onClick={() => handleTemplateUse("new-segment")}
+                >
+                  + Nieuw segment
+                </Button>
               </div>
-            </div>
-
-            {/* Bottom */}
-            <div className="mt-auto space-y-3">
-              <div className="rounded-xl border bg-white/70 backdrop-blur-md p-3 shadow-soft">
-                <div className="flex items-center gap-2">
-                  <span className="h-4 w-4 rounded bg-muted" aria-hidden />
-                  <div className="text-sm font-medium">Default Project</div>
-                </div>
-                <div className="mt-2 text-xs text-muted-foreground">Runs: 0 / 100</div>
-                <Progress value={0} className="mt-2" />
-              </div>
-
-              <Button
-                className="w-full justify-center bg-[hsl(var(--gold))] text-white"
-                onClick={() => handleTemplateUse("new-segment")}
-              >
-                + Nieuw segment
-              </Button>
             </div>
           </div>
-        </aside>
+
+          {/* Mobile drawer */}
+          {mobileOpen && (
+            <>
+              <div className="fixed inset-0 z-40 bg-black/10" onClick={() => setMobileOpen(false)} />
+              <div className="fixed left-0 top-0 z-50 h-dvh w-64 bg-white/70 backdrop-blur-md border-r border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-3">
+                <button
+                  aria-label="Sluit sidebar"
+                  onClick={() => setMobileOpen(false)}
+                  className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border bg-white/70"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+
+                <div className="mt-1">
+                  <div className="h-12 w-12 rounded-md border bg-[hsl(var(--gold))]" aria-hidden />
+                </div>
+
+                <nav className="mt-4 space-y-1 text-sm">
+                  <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
+                    <Home className="h-4 w-4" />
+                    <span>Home</span>
+                  </button>
+
+                  <div className="mt-2 px-2 text-[11px] uppercase tracking-wide text-muted-foreground">Activiteit</div>
+                  <button className="flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/60">
+                    <Activity className="h-4 w-4" />
+                    <span>Alle activiteit</span>
+                  </button>
+
+                  <div className="mt-3 mb-2 flex items-center justify-between px-2 text-[11px] uppercase tracking-wide text-muted-foreground">
+                    <span>Segmenten</span>
+                    <button
+                      aria-label="Nieuw segment"
+                      onClick={() => handleTemplateUse("new-segment")}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md border hover:bg-muted/60"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <ul className="space-y-1">
+                    {navSegments.map((s) => (
+                      <li key={s}>
+                        <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/60">
+                          <span className="h-2 w-2 rounded-full bg-muted-foreground/50" aria-hidden />
+                          <span className="truncate">{s}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+
+                <div className="mt-auto space-y-3 pt-4">
+                  <div className="rounded-xl border bg-white/70 backdrop-blur-md p-3 shadow-soft">
+                    <div className="flex items-center gap-2">
+                      <span className="h-4 w-4 rounded bg-muted" aria-hidden />
+                      <div className="text-sm font-medium">Default Project</div>
+                    </div>
+                    <div className="mt-2 text-xs text-muted-foreground">Runs: 0 / 100</div>
+                    <Progress value={0} className="mt-2" />
+                  </div>
+                  <Button
+                    className="w-full justify-center bg-[hsl(var(--gold))] text-white"
+                    onClick={() => {
+                      handleTemplateUse("new-segment");
+                      setMobileOpen(false);
+                    }}
+                  >
+                    + Nieuw segment
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </>
 
         {/* Content */}
         <section className="flex-1">
