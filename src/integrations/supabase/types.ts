@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companies: {
+        Row: {
+          created_at: string
+          discovered_at: string
+          hoofdvestiging_nr: string | null
+          id: string
+          kvk_nummer: string
+          last_checked_at: string | null
+          non_mailing: boolean | null
+          place: string | null
+          province: string | null
+          rechtsvorm: string | null
+          reg_date: string | null
+          sbi_codes: string[] | null
+          source_raw: Json | null
+          status: string | null
+          total_emp: number | null
+          updated_at: string
+          vestigingen_count: number | null
+          websites: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          discovered_at?: string
+          hoofdvestiging_nr?: string | null
+          id?: string
+          kvk_nummer: string
+          last_checked_at?: string | null
+          non_mailing?: boolean | null
+          place?: string | null
+          province?: string | null
+          rechtsvorm?: string | null
+          reg_date?: string | null
+          sbi_codes?: string[] | null
+          source_raw?: Json | null
+          status?: string | null
+          total_emp?: number | null
+          updated_at?: string
+          vestigingen_count?: number | null
+          websites?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          discovered_at?: string
+          hoofdvestiging_nr?: string | null
+          id?: string
+          kvk_nummer?: string
+          last_checked_at?: string | null
+          non_mailing?: boolean | null
+          place?: string | null
+          province?: string | null
+          rechtsvorm?: string | null
+          reg_date?: string | null
+          sbi_codes?: string[] | null
+          source_raw?: Json | null
+          status?: string | null
+          total_emp?: number | null
+          updated_at?: string
+          vestigingen_count?: number | null
+          websites?: string[] | null
+        }
+        Relationships: []
+      }
+      segment_companies: {
+        Row: {
+          ai_interest_label: string | null
+          first_seen_at: string
+          flags: Json | null
+          is_new_since_last_run: boolean
+          kvk_nummer: string
+          last_seen_at: string
+          score: number
+          segment_id: string
+        }
+        Insert: {
+          ai_interest_label?: string | null
+          first_seen_at?: string
+          flags?: Json | null
+          is_new_since_last_run?: boolean
+          kvk_nummer: string
+          last_seen_at?: string
+          score?: number
+          segment_id: string
+        }
+        Update: {
+          ai_interest_label?: string | null
+          first_seen_at?: string
+          flags?: Json | null
+          is_new_since_last_run?: boolean
+          kvk_nummer?: string
+          last_seen_at?: string
+          score?: number
+          segment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "segment_companies_kvk_nummer_fkey"
+            columns: ["kvk_nummer"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["kvk_nummer"]
+          },
+          {
+            foreignKeyName: "segment_companies_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "segments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      segments: {
+        Row: {
+          created_at: string
+          filters_json: Json | null
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          filters_json?: Json | null
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          filters_json?: Json | null
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
