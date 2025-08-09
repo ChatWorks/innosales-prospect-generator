@@ -74,7 +74,7 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onCancel(); }}>
-      <DialogContent aria-modal="true" role="dialog" className="max-w-md">
+      <DialogContent aria-modal="true" role="dialog" className="max-w-md glass-panel">
         <DialogHeader>
           <DialogTitle>Log in of maak een account om door te gaan</DialogTitle>
           <DialogDescription>
@@ -130,7 +130,7 @@ export default function AuthGate({ open, onClose, onSuccess }: AuthGateProps) {
             <p className="text-sm text-destructive" role="alert" aria-live="assertive">{error}</p>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full bg-[hsl(var(--gold))] text-white" disabled={loading}>
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

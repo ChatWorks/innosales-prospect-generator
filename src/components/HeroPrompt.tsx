@@ -21,20 +21,18 @@ const HeroPrompt = () => {
 
   const stats = useMemo(() => {
     const trimmed = value.trim();
-    const words = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
     const length = trimmed.length;
-    return { words, length, trimmed };
+    return { length, trimmed };
   }, [value]);
 
-  const isValid = stats.words >= 10 && stats.length <= 800;
+  const canSubmit = stats.length > 0 && stats.length <= 800;
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isValid) {
+  const proceed = async () => {
+    if (!canSubmit) {
       setError(
         stats.length > 800
           ? "Je prompt is te lang (max. 800 tekens)."
-          : "Je prompt moet minimaal 10 woorden bevatten."
+          : "Voer een prompt in om door te gaan."
       );
       return;
     }
@@ -55,6 +53,11 @@ const HeroPrompt = () => {
     }
 
     navigate("/dashboard");
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await proceed();
   };
 
   const handleAuthSuccess = () => {
@@ -86,6 +89,12 @@ const HeroPrompt = () => {
             id="prospect-prompt"
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && !(e.nativeEvent as any).isComposing) {
+                e.preventDefault();
+                void proceed();
+              }
+            }}
             placeholder="Beschrijf je ideale prospect…"
             className="w-full resize-none bg-transparent outline-none text-base md:text-lg leading-relaxed placeholder:text-neutral-400 p-5 md:p-6 pr-16 md:pr-20 min-h-[120px] md:min-h-[140px] border-0 shadow-none focus-visible:ring-0"
             rows={4}
@@ -98,7 +107,7 @@ const HeroPrompt = () => {
               size="icon"
               className="h-10 w-10 rounded-full bg-gradient-to-b from-[hsl(var(--gold))] to-[hsl(var(--gold-dark))] text-white shadow-md transition-transform duration-150 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               aria-label="Verstuur prompt"
-              disabled={!isValid || loading}
+              disabled={!canSubmit || loading}
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
@@ -112,7 +121,7 @@ const HeroPrompt = () => {
         </div>
 
         <p className="mt-2 text-center text-sm text-muted-foreground">
-          ≥10 woorden, ≤800 tekens. Je kunt je prompt later altijd aanpassen.
+          ≤800 tekens. Enter = verzenden, Shift+Enter = nieuwe regel.
         </p>
       </div>
 
