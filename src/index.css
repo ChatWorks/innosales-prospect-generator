@@ -59,7 +59,7 @@ All colors MUST be HSL. */
     /* Decorative & motion tokens */
     --shadow-soft: 0 12px 40px -18px hsl(var(--foreground) / 0.15);
     --shadow-elegant: 0 10px 30px -10px hsl(var(--brand) / 0.45);
-    --dot: 220 16% 92%;
+    --dot: 220 16% 88%;
   }
 
   .dark {

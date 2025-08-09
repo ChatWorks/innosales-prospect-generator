@@ -8,8 +8,8 @@ const Index = () => {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: "radial-gradient(hsl(var(--dot)) 1px, transparent 1px)",
-          backgroundSize: "18px 18px",
+          backgroundImage: "radial-gradient(hsl(var(--dot)) 2px, transparent 2px)",
+          backgroundSize: "24px 24px",
           maskImage:
             "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 100%)",
         }}
