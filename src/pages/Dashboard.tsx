@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import HeroPrompt from "@/components/HeroPrompt";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw, Zap } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Home, Activity, Plus, RefreshCcw, Zap, CalendarDays } from "lucide-react";
 
 const navSegments = [
   "AI-curious Twente",
@@ -88,26 +89,63 @@ const Dashboard = () => {
 
       <div ref={shellRef} className="relative z-10 flex min-h-screen">
         {/* Sidebar */}
-        <aside className="hidden md:flex w-64 shrink-0 border-r bg-white/80 backdrop-blur-md">
-          <div className="flex h-screen flex-col p-4">
-            <div className="flex items-center gap-2 px-1 pt-1 pb-4">
-              <div className="h-6 w-6 rounded-md border bg-[hsl(var(--gold))]" aria-hidden />
-              <span className="text-sm font-semibold">Innosales</span>
+        <aside className="hidden md:flex w-64 shrink-0 border-r bg-background/60 backdrop-blur-md">
+          <div className="flex h-screen flex-col p-4 gap-3">
+            {/* Brand */}
+            <div className="flex items-center justify-between px-2 pt-1 pb-3">
+              <div className="inline-flex items-center gap-2.5 select-none">
+                <div className="h-7 w-7 rounded-md border bg-[hsl(var(--gold))]" aria-hidden />
+                <span className="text-base font-semibold">Innosales</span>
+              </div>
             </div>
+
+            {/* Nav */}
             <nav className="space-y-5 text-sm">
-              <div className="space-y-1">
-                <div className="px-1 text-muted-foreground">Home</div>
-              </div>
-              <div className="space-y-1">
-                <div className="px-1 text-muted-foreground">Activiteit</div>
-              </div>
+              {/* Home */}
               <div>
-                <div className="px-1 text-muted-foreground mb-2">Segmenten</div>
+                <button className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left hover:bg-muted/60">
+                  <Home className="h-4 w-4" />
+                  <span className="text-[0.95rem] font-medium">Home</span>
+                </button>
+              </div>
+
+              {/* Activiteit */}
+              <div className="space-y-1">
+                <div className="px-2 text-[11px] uppercase tracking-wide text-muted-foreground">Activiteit</div>
+                <ul className="mt-1 space-y-1">
+                  <li>
+                    <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted/60">
+                      <Activity className="h-4 w-4" />
+                      <span>Alle activiteit</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted/60">
+                      <Activity className="h-4 w-4 opacity-70" />
+                      <span>Bewaarde weergaven</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Segmenten */}
+              <div>
+                <div className="mb-2 flex items-center justify-between px-2 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <span>Segmenten</span>
+                  <button
+                    aria-label="Nieuw segment"
+                    onClick={() => handleTemplateUse("new-segment")}
+                    className="inline-flex h-6 w-6 items-center justify-center rounded-md border hover:bg-muted/60"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
                 <ul className="space-y-1">
                   {navSegments.map((s) => (
                     <li key={s}>
-                      <button className="w-full rounded-md px-2 py-1.5 text-left hover:bg-muted/60">
-                        {s}
+                      <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted/60">
+                        <span className="h-2 w-2 rounded-full bg-muted-foreground/50" aria-hidden />
+                        <span className="truncate">{s}</span>
                       </button>
                     </li>
                   ))}
@@ -115,12 +153,35 @@ const Dashboard = () => {
               </div>
             </nav>
 
-            <div className="mt-auto space-y-2">
-              <Button className="w-full justify-center bg-[hsl(var(--gold))] text-white" onClick={() => handleTemplateUse("new-segment")}>+ New Segment</Button>
-              <div className="rounded-md border bg-white/70 p-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2"><span className="h-4 w-4 rounded bg-muted" /> Default Project</div>
-                <div className="mt-2">Runs: 0 / 100</div>
+            {/* Callout */}
+            <div className="rounded-xl border bg-white/70 backdrop-blur-md p-3 shadow-soft">
+              <div className="flex items-start gap-2">
+                <div className="rounded-md border bg-muted/40 p-1.5">
+                  <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Plan een call om je segment of export te bespreken met een AI‑expert.
+                </p>
               </div>
+            </div>
+
+            {/* Bottom */}
+            <div className="mt-auto space-y-3">
+              <div className="rounded-xl border bg-white/70 backdrop-blur-md p-3 shadow-soft">
+                <div className="flex items-center gap-2">
+                  <span className="h-4 w-4 rounded bg-muted" aria-hidden />
+                  <div className="text-sm font-medium">Default Project</div>
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">Runs: 0 / 100</div>
+                <Progress value={0} className="mt-2" />
+              </div>
+
+              <Button
+                className="w-full justify-center bg-[hsl(var(--gold))] text-white"
+                onClick={() => handleTemplateUse("new-segment")}
+              >
+                + Nieuw segment
+              </Button>
             </div>
           </div>
         </aside>
