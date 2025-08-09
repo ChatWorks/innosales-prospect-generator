@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AuthGate from "@/components/AuthGate";
 
-const HeroPrompt = () => {
+interface HeroPromptProps { showHeader?: boolean }
+const HeroPrompt = ({ showHeader = true }: HeroPromptProps) => {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -69,14 +70,16 @@ const HeroPrompt = () => {
   return (
     <section aria-label="Prospect prompt" className="relative">
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6">
-        <header className="mb-10 md:mb-12 text-center">
-          <h1 className="text-balance text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight">
-            Genereer prospects met één krachtige prompt
-          </h1>
-          <p className="mt-6 md:mt-8 text-lg text-muted-foreground leading-relaxed">
-            Bouw later je segment — vandaag start je met één duidelijke instructie.
-          </p>
-        </header>
+        {showHeader && (
+          <header className="mb-10 md:mb-12 text-center">
+            <h1 className="text-balance text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight">
+              Genereer prospects met één krachtige prompt
+            </h1>
+            <p className="mt-6 md:mt-8 text-lg text-muted-foreground leading-relaxed">
+              Bouw later je segment — vandaag start je met één duidelijke instructie.
+            </p>
+          </header>
+        )}
 
         <form
           onSubmit={onSubmit}
