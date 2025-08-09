@@ -22,23 +22,13 @@ const HeroPrompt = () => {
   return (
     <section aria-label="Prospect prompt" className="relative">
       {/* Dotted background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: "radial-gradient(hsl(var(--dot)) 1px, transparent 1px)",
-          backgroundSize: "18px 18px",
-          maskImage:
-            "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0.6) 100%)",
-        }}
-      />
 
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6">
-        <header className="mb-8 text-center">
+        <header className="mb-10 md:mb-12 text-center">
           <h1 className="text-balance text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight">
             Genereer prospects met één krachtige prompt
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-6 md:mt-8 text-lg text-muted-foreground leading-relaxed">
             Bouw later je workflow — vandaag start je met één duidelijke instructie.
           </p>
         </header>
