@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import HeroPrompt from "@/components/HeroPrompt";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import ChromaGrid from "@/components/ChromaGrid";
 import { Home, Activity, Plus, RefreshCcw, Zap, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -151,6 +152,7 @@ const currentSuggestion = useMemo(
 );
 // DB prospects
 const [dbProspects, setDbProspects] = useState<Prospect[] | null>(null);
+  const [selected, setSelected] = useState<Prospect | null>(null);
 
   // SEO
   useEffect(() => {
@@ -477,49 +479,37 @@ const [dbProspects, setDbProspects] = useState<Prospect[] | null>(null);
     <h2 className="text-lg font-semibold">Prospects</h2>
     <p className="text-sm text-muted-foreground">Deze lijst komt uit de database (demo-data) en is klaar voor KVK-verrijking.</p>
   </header>
-  <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-    {(dbProspects?.length ? dbProspects : placeholderProspects).map((p) => (
-      <button
-        key={p.kvk_nummer}
-        onClick={() => console.info("prospect_open", { kvk: p.kvk_nummer })}
-        className="text-left"
-      >
-        <Card className="rounded-xl border bg-white/70 backdrop-blur-md hover:bg-white transition-colors">
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between gap-3">
-              <CardTitle className="text-base font-medium leading-tight">{p.naam}</CardTitle>
-              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-[hsl(var(--gold))] text-white">
-                {p.score}
-              </span>
-            </div>
-            <CardDescription className="mt-1 text-sm">
-              {p.plaats}, {p.provincie}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center rounded-full border px-2 py-0.5">KVK {p.kvk_nummer}</span>
-              <span className="inline-flex items-center rounded-full border px-2 py-0.5">Vestigingen {p.vestigingen_count}</span>
-              <span className="inline-flex items-center rounded-full border px-2 py-0.5">Medew. {p.total_emp ?? "—"}</span>
-              <span className="inline-flex items-center rounded-full border px-2 py-0.5">{p.rechtsvorm ?? "—"}</span>
-            </div>
-            {p.websites?.[0] && (
-              <div className="mt-2 text-xs">
-                <a
-                  href={p.websites[0]}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-2"
-                >
-                  {(p.websites[0] || "").replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                </a>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </button>
-    ))}
+  <div className="mt-4">
+    <ChromaGrid
+      items={(dbProspects?.length ? dbProspects : placeholderProspects).map((p) => ({
+        id: p.kvk_nummer,
+        title: p.naam,
+        score: p.score,
+      }))}
+      columns={3}
+      radius={280}
+      damping={0.45}
+      fadeOut={0.6}
+      onItemClick={(id) => {
+        const list = dbProspects?.length ? dbProspects : placeholderProspects;
+        const found = list.find((pp) => pp.kvk_nummer === id) || null;
+        setSelected(found);
+      }}
+    />
   </div>
+  <Dialog open={!!selected} onOpenChange={(open) => { if (!open) setSelected(null); }}>
+    <DialogContent className="max-w-md">
+      <DialogHeader>
+        <DialogTitle>{selected?.naam}</DialogTitle>
+      </DialogHeader>
+      <div className="mt-2 text-sm text-muted-foreground">Leadscore</div>
+      <div className="mt-1">
+        <span className="inline-flex items-center rounded-full bg-[hsl(var(--gold))] text-white px-2 py-0.5 text-sm">
+          {selected?.score}
+        </span>
+      </div>
+    </DialogContent>
+  </Dialog>
 </section>
           </div>
         </section>
