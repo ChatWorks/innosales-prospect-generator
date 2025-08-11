@@ -246,7 +246,7 @@ const [dbProspects, setDbProspects] = useState<Prospect[] | null>(null);
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: "radial-gradient(hsl(var(--dot)) 1.8px, transparent 1.8px)",
+          backgroundImage: "radial-gradient(hsl(var(--dot) / 0.25) 1.8px, transparent 1.8px)",
           backgroundSize: "24px 24px",
         }}
       />
