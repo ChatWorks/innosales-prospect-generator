@@ -448,7 +448,7 @@ const [dbProspects, setDbProspects] = useState<Prospect[] | null>(null);
 
           <div className="mx-auto max-w-4xl px-4 sm:px-6 pt-32 md:pt-36 pb-10 md:pb-12">
 <header className="text-center">
-  <h1 className="text-2xl md:text-4xl font-semibold">Start je segment</h1>
+  <h1 className="text-2xl md:text-6xl font-semibold">Start je segment</h1>
   <p className="mt-1 text-sm text-muted-foreground">Geef je wensen op en laat AI je prospectlijst genereren.</p>
 </header>
 
