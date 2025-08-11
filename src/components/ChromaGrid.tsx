@@ -4,9 +4,15 @@ import "./ChromaGrid.css";
 
 export interface ChromaItem {
   id: string;
-  title: string;
+  title: string; // bedrijfsnaam
   score: number;
-  url?: string;
+  url?: string; // voor detail of externe link
+  image?: string; // hero afbeelding optioneel
+  subtitle?: string; // sector of korte beschrijving
+  location?: string;
+  employees?: number;
+  sector?: string;
+  ctaLabel?: string; // knop label
 }
 
 interface Props {
@@ -37,6 +43,19 @@ const ChromaGrid = ({
   const setX = useRef<((v: number) => void) | null>(null);
   const setY = useRef<((v: number) => void) | null>(null);
   const pos = useRef({ x: 0, y: 0 });
+
+  // Abstract hero backgrounds for cards without images (9 styles)
+  const ART_BG = [
+    "radial-gradient(60% 100% at 50% 0%, hsl(var(--primary) / 0.25), transparent 60%), linear-gradient(135deg, hsl(var(--card)), transparent)",
+    "conic-gradient(from 180deg at 50% 50%, hsl(var(--gold) / 0.15), transparent 40%, hsl(var(--primary) / 0.15))",
+    "linear-gradient(145deg, hsl(var(--primary) / 0.18), hsl(var(--background)))",
+    "radial-gradient(80% 80% at 20% 20%, hsl(var(--gold) / 0.18), transparent 60%)",
+    "linear-gradient(120deg, hsl(var(--primary) / 0.15), transparent), radial-gradient(50% 60% at 80% 20%, hsl(var(--gold) / 0.14), transparent 60%)",
+    "conic-gradient(from 90deg at 50% 50%, hsl(var(--primary) / 0.16), transparent 30%, hsl(var(--gold) / 0.12))",
+    "linear-gradient(180deg, hsl(var(--card)), hsl(var(--primary) / 0.08)), radial-gradient(60% 60% at 70% 30%, hsl(var(--gold) / 0.12), transparent 60%)",
+    "radial-gradient(100% 100% at 50% 100%, hsl(var(--primary) / 0.2), transparent 60%)",
+    "conic-gradient(from 45deg at 50% 50%, hsl(var(--gold) / 0.12), hsl(var(--primary) / 0.12), transparent)"
+  ];
 
   useEffect(() => {
     const el = rootRef.current;
@@ -100,7 +119,7 @@ const ChromaGrid = ({
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
     >
-      {items.map((it) => (
+      {items.map((it, i) => (
         <article
           key={it.id}
           className="chroma-card"
@@ -116,10 +135,50 @@ const ChromaGrid = ({
           }}
           aria-label={`${it.title} – score ${it.score}`}
         >
-          <footer className="chroma-info">
-            <h3 className="name">{it.title}</h3>
-            <span className="score-badge" aria-label="Leadscore">{it.score}</span>
-          </footer>
+          <div
+            className="chroma-hero"
+            style={{
+              // @ts-ignore custom property for background
+              "--hero-bg": it.image ? undefined : ART_BG[i % ART_BG.length],
+            }}
+          >
+            {it.image && (
+              <img src={it.image} alt={`Afbeelding van ${it.title}`} loading="lazy" />
+            )}
+          </div>
+
+          <section className="chroma-info">
+            <div className="chroma-text">
+              <h3 className="name">{it.title}</h3>
+              {(it.subtitle || it.sector || it.location) && (
+                <p className="subtitle">
+                  {it.subtitle || [it.sector, it.location].filter(Boolean).join(" · ")}
+                </p>
+              )}
+            </div>
+
+            <div className="chroma-metrics">
+              <span className="score-badge" aria-label="Leadscore">{it.score}</span>
+              {it.location && <span className="metric">{it.location}</span>}
+              {typeof it.employees === 'number' && (
+                <span className="metric">{it.employees} medewerkers</span>
+              )}
+            </div>
+
+            <footer className="chroma-actions">
+              <button
+                type="button"
+                className="chroma-cta"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onItemClick?.(it.id);
+                }}
+                aria-label={`Bekijk prospect ${it.title}`}
+              >
+                {it.ctaLabel || "Bekijk prospect"}
+              </button>
+            </footer>
+          </section>
         </article>
       ))}
       <div className="chroma-overlay" />
