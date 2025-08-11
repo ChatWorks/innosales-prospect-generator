@@ -57,6 +57,9 @@ const ChromaGrid = ({
     "conic-gradient(from 45deg at 50% 50%, hsl(var(--gold) / 0.12), hsl(var(--primary) / 0.12), transparent)"
   ];
 
+  // Default hero image used when no per-item image is provided
+  const DEFAULT_HERO = "/lovable-uploads/c9a7c320-addb-4ca4-805d-31a8962de3c0.png";
+
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
@@ -142,9 +145,14 @@ const ChromaGrid = ({
               "--hero-bg": it.image ? undefined : ART_BG[i % ART_BG.length],
             }}
           >
-            {it.image && (
-              <img src={it.image} alt={`Afbeelding van ${it.title}`} loading="lazy" />
-            )}
+            <img
+              src={it.image || DEFAULT_HERO}
+              alt={`Afbeelding van ${it.title}`}
+              loading="lazy"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = DEFAULT_HERO;
+              }}
+            />
           </div>
 
           <section className="chroma-info">
