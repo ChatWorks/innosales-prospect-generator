@@ -124,6 +124,7 @@
   position: relative;
   aspect-ratio: 16 / 9;
   width: 100%;
+  min-height: 140px; /* fallback for browsers without aspect-ratio */
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid hsl(var(--gold) / 0.25);

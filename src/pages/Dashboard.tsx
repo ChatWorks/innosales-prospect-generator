@@ -485,6 +485,10 @@ const [dbProspects, setDbProspects] = useState<Prospect[] | null>(null);
         id: p.kvk_nummer,
         title: p.naam,
         score: p.score,
+        subtitle: [p.provincie, p.plaats].filter(Boolean).join(" · ") || undefined,
+        location: p.plaats || undefined,
+        employees: typeof p.total_emp === 'number' ? p.total_emp : undefined,
+        ctaLabel: "Bekijk prospect",
       }))}
       columns={3}
       radius={280}
