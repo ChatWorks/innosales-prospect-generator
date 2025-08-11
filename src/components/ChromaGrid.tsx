@@ -168,9 +168,6 @@ const ChromaGrid = ({
             <div className="chroma-metrics">
               <span className="score-badge" aria-label="Leadscore">{it.score}</span>
               {it.location && <span className="metric">{it.location}</span>}
-              {typeof it.employees === 'number' && (
-                <span className="metric">{it.employees} medewerkers</span>
-              )}
             </div>
 
             <footer className="chroma-actions">
